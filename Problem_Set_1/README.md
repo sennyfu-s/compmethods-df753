@@ -588,3 +588,17 @@ plt.close()
 
 4e.
 Using a single test value like patient_id = 1 is unrepresentative because BST performance depends on tree structure. Testing only one value doesn't reveal average-case behavior, worst-case scenarios, or best-case scenarios. For accurate performance assessment, we need to test with multiple random values across different tree positions and varying tree sizes to understand how the data structure performs under realistic conditions.
+
+
+
+Exercise 5
+5a.
+1. Gene Ontology (GO)
+Data types: Gene sequences, clinician notes
+Justification: GO provides comprehensive coverage of gene functions, biological processes, and cellular components. GO terms can also annotate functional descriptions in clinical notes when discussing gene-related findings.
+2. Systematized Nomenclature of Medicine - Clinical Terms (SNOMED CT)
+Data types: Imaging, medications, clinician notes
+Justification: SNOMED CT is the most comprehensive clinical terminology covering medications and anatomical structures. It bridges multiple data types by providing standardized terms for anatomical regions and medication descriptions.
+
+
+5b.
