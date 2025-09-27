@@ -1,10 +1,13 @@
 Excercise 1
+Please import the following before run the code.
 ```python
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 from collections import Counter
+```
 
-# 1a.
+1a.
+```python
 # Load and parse XML
 tree = ET.parse('pset1-patients.xml')
 root = tree.getroot()
@@ -38,3 +41,21 @@ age_counts = Counter(ages)
 duplicates = {age: count for age, count in age_counts.items() if count > 1}
 print(f"Patients with same age: {duplicates if duplicates else 'None'}")
 ```
+
+
+1b
+```python
+genders = [p['gender'] for p in patients]
+gender_counts = Counter(genders)
+total = len(genders)
+gender_percentages = {k: (v/total)*100 for k, v in gender_counts.items()}
+
+plt.figure(figsize=(8, 6))
+plt.bar(gender_percentages.keys(), gender_percentages.values())
+plt.xlabel('Gender')
+plt.ylabel('Percentage (%)')
+plt.title('Gender Distribution')
+plt.savefig('gender_distribution.png')
+plt.close()
+```
+![Gender Distribution](gender_distribution.png)
