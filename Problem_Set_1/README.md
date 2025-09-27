@@ -435,3 +435,156 @@ plt.close()
 
 3d.
 alg1 is fastest on already-sorted data but becomes slow on random or reversed data as size increases. alg2 maintains consistent performance regardless of input order. I recommend to use alg2 for healthcare applications because its predictable O(n log n) performance ensures reliable response times regardless of data characteristics. Use alg1 only for small datasets (maybe ~n < 100) that are known to be nearly sorted.
+
+
+
+Excercise 4
+Import the following before run the code
+```python
+import time
+import random
+import matplotlib.pyplot as plt
+import numpy as np
+```
+
+
+4abc.
+```python
+class Tree:
+    def __init__(self):
+        self._value = None
+        self._data = None
+        self.left = None
+        self.right = None
+
+    # 4a. 
+    def add(self, value, data):
+        if self._value is None:
+            self._value = value
+            self._data = data
+        elif value < self._value:
+            if self.left is None:
+                self.left = Tree()
+            self.left.add(value, data)
+        else:
+            if self.right is None:
+                self.right = Tree()
+            self.right.add(value, data)
+
+    # 4b. 
+    def __contains__(self, patient_id):
+        if self._value == patient_id:
+            return True
+        elif self.left and patient_id < self._value:
+            return patient_id in self.left
+        elif self.right and patient_id > self._value:
+            return patient_id in self.right
+        else:
+            return False
+
+    # 4c.
+    def has_data(self, data):
+        if self._data == data:
+            return True
+        if self.left and self.left.has_data(data):
+            return True
+        if self.right and self.right.has_data(data):
+            return True
+        return False
+
+# Test 4a and 4b
+print("4a & 4b Tests:")
+my_tree = Tree()
+for patient_id, initials in [(24601, "JV"), (42, "DA"), (7, "JB"), (143, "FR"), (8675309, "JNY")]:
+    my_tree.add(patient_id, initials)
+
+print(f"24601 in my_tree: {24601 in my_tree}")
+print(f"1492 in my_tree: {1492 in my_tree}")
+
+# Test 4c
+print("4c Tests:")
+print(f"has_data('JV'): {my_tree.has_data('JV')}")
+print(f"has_data(24601): {my_tree.has_data(24601)}")
+```
+4a & 4b Tests:
+24601 in my_tree: True
+1492 in my_tree: False
+4c Tests:
+has_data('JV'): True
+has_data(24601): False
+
+
+4c.
+```python
+n_values = np.logspace(2, 4, 15).astype(int)
+contains_times = []
+has_data_times = []
+setup_times = []
+```
+```python
+for n in n_values:
+    # Generate random patient data
+    patient_ids = random.sample(range(1, n*10), n)
+    patient_data = [f"P{i}" for i in range(n)]
+    
+    # Measure setup time
+    tree = Tree()
+    start = time.perf_counter()
+    for pid, data in zip(patient_ids, patient_data):
+        tree.add(pid, data)
+    setup_time = time.perf_counter() - start
+    setup_times.append(setup_time)
+    
+    # Measure __contains__ time
+    test_ids = random.sample(patient_ids, min(1000, n))
+    start = time.perf_counter()
+    for tid in test_ids:
+        _ = tid in tree
+    contains_time = (time.perf_counter() - start) / len(test_ids)
+    contains_times.append(contains_time)
+    
+    # Measure has_data time
+    test_data = random.sample(patient_data, min(1000, n))
+    start = time.perf_counter()
+    for td in test_data:
+        _ = tree.has_data(td)
+    has_data_time = (time.perf_counter() - start) / len(test_data)
+    has_data_times.append(has_data_time)
+```
+```python
+# Plot performance
+plt.figure(figsize=(15, 5))
+
+plt.subplot(1, 3, 1)
+plt.loglog(n_values, contains_times, 'o-')
+plt.xlabel('n')
+plt.ylabel('Time per operation (s)')
+plt.title('__contains__ Performance')
+plt.grid(True)
+
+plt.subplot(1, 3, 2)
+plt.loglog(n_values, has_data_times, 'o-')
+plt.xlabel('n')
+plt.ylabel('Time per operation (s)')
+plt.title('has_data Performance')
+plt.grid(True)
+
+plt.subplot(1, 3, 3)
+plt.loglog(n_values, setup_times, 'o-', label='Actual')
+plt.loglog(n_values, n_values * 1e-6, '--', label='O(n)')
+plt.loglog(n_values, n_values * np.log(n_values) * 1e-7, '--', label='O(n log n)')
+plt.xlabel('n')
+plt.ylabel('Total setup time (s)')
+plt.title('Tree Construction Time')
+plt.legend()
+plt.grid(True)
+
+plt.tight_layout()
+plt.savefig('bst_performance.png')
+plt.close()
+```
+![bst Performance](bst_performance.png)
+
+
+4e.
+Using a single test value like patient_id = 1 is unrepresentative because BST performance depends on tree structure. Testing only one value doesn't reveal average-case behavior, worst-case scenarios, or best-case scenarios. For accurate performance assessment, we need to test with multiple random values across different tree positions and varying tree sizes to understand how the data structure performs under realistic conditions.
