@@ -602,3 +602,20 @@ Justification: SNOMED CT is the most comprehensive clinical terminology covering
 
 
 5b.
+Gene Ontology (GO)
+License: CC BY 4.0 (Free to use, no restrictions)
+Restrictions: None
+SNOMED CT
+License: Requires SNOMED International membership; free in many member countries but with use restrictions
+Restrictions: Licensing required for commercial use, distribution restrictions
+Alternative: LOINC (Logical Observation Identifiers Names and Codes)
+Free, open-access terminology covering laboratory tests and clinical observations. It handles clinical measurements and diagnostic tests well
+However, SNOMED CT's hierarchical relationships and broader coverage of clinical concepts provide better semantic interoperability.
+
+
+5c.
+Search approach:
+1. Used BioPortal Ontology. Sample text: "Patient presents with lung adenocarcinoma, EGFR mutation detected, prescribed gefitinib, CT scan shows 3cm mass in right upper lobe".
+2. Consulted OBO Foundry for well-maintained biological ontologies.
+3. Reviewed NCBO BioPortal for clinical and imaging ontologies.
+Stopping rule: Selected ontologies when each major data type had at least one domain-specific ontology providing >80% relevant term coverage. And no two ontologies had >40% conceptual overlap on the same data type.
