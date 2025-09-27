@@ -367,5 +367,71 @@ Hypothesis: Both algorithms perform sorting in ascending order.
 alg1 implements bubble sort by repeatedly comparing adjacent elements and swapping them if out of order until no swaps are needed. While alg2 implements merge sort by recursively splitting the list in half, then merging sorted sublists back together in order.
 
 
+3c.
+```python
+n_values = np.logspace(1, 4, 20).astype(int)
+
+def measure_performance(alg, data_func, n_values, name):
+    times = []
+    for n in n_values:
+        data = data_func(n)
+        start = time.perf_counter()
+        alg(data)
+        end = time.perf_counter()
+        times.append(end - start)
+    return times
+```
+```python
+# Data set 1
+times_alg1_data1 = measure_performance(alg1, data1, n_values, "alg1-data1")
+times_alg2_data1 = measure_performance(alg2, data1, n_values, "alg2-data1")
+
+# Data set 2
+times_alg1_data2 = measure_performance(alg1, data2, n_values, "alg1-data2")
+times_alg2_data2 = measure_performance(alg2, data2, n_values, "alg2-data2")
+
+# Data set 3
+times_alg1_data3 = measure_performance(alg1, data3, n_values, "alg1-data3")
+times_alg2_data3 = measure_performance(alg2, data3, n_values, "alg2-data3")
+```
+```python
+# Plot data1
+plt.figure(figsize=(12, 4))
+plt.subplot(1, 3, 1)
+plt.loglog(n_values, times_alg1_data1, 'o-', label='alg1')
+plt.loglog(n_values, times_alg2_data1, 's-', label='alg2')
+plt.xlabel('n')
+plt.ylabel('Time (s)')
+plt.title('Performance on data1')
+plt.legend()
+plt.grid(True)
+
+# Plot data2
+plt.subplot(1, 3, 2)
+plt.loglog(n_values, times_alg1_data2, 'o-', label='alg1')
+plt.loglog(n_values, times_alg2_data2, 's-', label='alg2')
+plt.xlabel('n')
+plt.ylabel('Time (s)')
+plt.title('Performance on data2')
+plt.legend()
+plt.grid(True)
+
+# Plot data3
+plt.subplot(1, 3, 3)
+plt.loglog(n_values, times_alg1_data3, 'o-', label='alg1')
+plt.loglog(n_values, times_alg2_data3, 's-', label='alg2')
+plt.xlabel('n')
+plt.ylabel('Time (s)')
+plt.title('Performance on data3')
+plt.legend()
+plt.grid(True)
+
+plt.tight_layout()
+plt.savefig('algorithm_performance.png')
+plt.close()
+```
+![Algorithm Performance](algorithm_performance.png)
+
+
 3d.
 alg1 is fastest on already-sorted data but becomes slow on random or reversed data as size increases. alg2 maintains consistent performance regardless of input order. I recommend to use alg2 for healthcare applications because its predictable O(n log n) performance ensures reliable response times regardless of data characteristics. Use alg1 only for small datasets (maybe ~n < 100) that are known to be nearly sorted.
