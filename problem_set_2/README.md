@@ -163,3 +163,181 @@ plt.savefig("Performance_analysis_of_hashes.png")
 plt.show()
 ```
 ![Bloom Filter Performance](Performance_analysis_of_hashes.png)
+Below used the model figure to answer 1c. (My result isn't ideal)
+With 1 hash function, approximately 10^8 bits are necessary to achieve 85% good suggestions. A single hash function creates more collisions, requiring a larger filter to adequately reduce false positives.
+With 2 hash functions, approximately 10^7 to 10^8 bits are needed to reach 85% good suggestions. Two hash functions provide better filtering than one by requiring two independent bit positions to match.
+With 3 hash functions, approximately 10^7 bits are sufficient to achieve 85% good suggestions. Three hash functions minimize false positives most effectively by requiring three independent bit matches, allowing the smallest filter size to meet the performance target.
+
+
+Excercise 2
+```python
+%%writefile sort_functions.py
+def alg2_keyed(data, key):
+    if len(data) <= 1:
+        return data
+    else:
+        split = len(data) // 2
+        left = iter(alg2_keyed(data[:split], key))
+        right = iter(alg2_keyed(data[split:], key))
+        result = []
+        
+        def get_key_value(item):
+            if isinstance(item, dict):
+                return item[key]
+            else:
+                return item[key]
+        
+        left_top = next(left)
+        right_top = next(right)
+        
+        while True:
+            if get_key_value(left_top) < get_key_value(right_top):
+                result.append(left_top)
+                try:
+                    left_top = next(left)
+                except StopIteration:
+                    return result + [right_top] + list(right)
+            else:
+                result.append(right_top)
+                try:
+                    right_top = next(right)
+                except StopIteration:
+                    return result + [left_top] + list(left)
+
+
+def merge_sorted_lists(left, right, key):
+    result = []
+    i = j = 0
+    
+    def get_key_value(item):
+        if isinstance(item, dict):
+            return item[key]
+        else:
+            return item[key]
+    
+    while i < len(left) and j < len(right):
+        if get_key_value(left[i]) < get_key_value(right[j]):
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
+```
+
+2a.
+```python
+from sort_functions import alg2_keyed, merge_sorted_lists
+```
+```python
+# Example 1
+patient_data_tuples = [
+    (105, "Patient E"),
+    (102, "Patient B"),
+    (104, "Patient D"),
+    (101, "Patient A"),
+    (103, "Patient C")
+]
+
+sorted_tuples = alg2_keyed(patient_data_tuples, key=0)
+print(sorted_tuples)
+print("Patient IDs in order:", [t[0] for t in sorted_tuples])
+```
+```python
+# Example 2
+patient_data_dicts = [
+    {"patient_id": 105, "patient_data": "Patient E"},
+    {"patient_id": 102, "patient_data": "Patient B"},
+    {"patient_id": 104, "patient_data": "Patient D"},
+    {"patient_id": 101, "patient_data": "Patient A"},
+    {"patient_id": 103, "patient_data": "Patient C"}
+]
+
+sorted_dicts = alg2_keyed(patient_data_dicts, key="patient_id")
+print(sorted_dicts)
+print("Patient IDs in order:", [d["patient_id"] for d in sorted_dicts])
+```
+
+2b.
+```python
+import multiprocessing as mp
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+```
+```python
+def alg2_keyed_parallel(data, key, num_processes=None):
+    if num_processes is None:
+        num_processes = mp.cpu_count()
+    
+    if len(data) <= 1:
+        return data
+    
+    chunk_size = max(1, len(data) // num_processes)
+    chunks = [data[i:i + chunk_size] for i in range(0, len(data), chunk_size)]
+    
+    with mp.Pool(processes=num_processes) as pool:
+        sorted_chunks = pool.starmap(alg2_keyed, [(chunk, key) for chunk in chunks])
+    
+    while len(sorted_chunks) > 1:
+        merged = []
+        for i in range(0, len(sorted_chunks), 2):
+            if i + 1 < len(sorted_chunks):
+                merged.append(merge_sorted_lists(sorted_chunks[i], sorted_chunks[i + 1], key))
+            else:
+                merged.append(sorted_chunks[i])
+        sorted_chunks = merged
+    
+    return sorted_chunks[0]
+```
+```python
+dataset_sizes = [1000, 5000, 10000, 50000, 100000, 500000]
+serial_times = []
+parallel_times = []
+speedups = []
+
+print("Dataset Size | Serial Time | Parallel Time | Speedup")
+
+for size in dataset_sizes:
+    data = [(i, f"Data_{i}") for i in np.random.randint(0, size * 10, size)]
+    
+    start = time.time()
+    alg2_keyed(data.copy(), key=0)
+    serial_time = time.time() - start
+    serial_times.append(serial_time)
+    
+    start = time.time()
+    alg2_keyed_parallel(data.copy(), key=0)
+    parallel_time = time.time() - start
+    parallel_times.append(parallel_time)
+    
+    speedup = serial_time / parallel_time
+    speedups.append(speedup)
+    
+    print(f"{size:>12} | {serial_time:>11.4f}s | {parallel_time:>13.4f}s | {speedup:>6.2f}x")
+```
+Result tabel:
+  Dataset Size | Serial Time | Parallel Time | Speedup
+        1000 |      0.0016s |        0.4542s |   0.00x
+        5000 |      0.0081s |        0.3760s |   0.02x
+       10000 |      0.0178s |        0.4775s |   0.04x
+       50000 |      0.1037s |        0.7822s |   0.13x
+      100000 |      0.2194s |        1.0988s |   0.20x
+      500000 |      1.3353s |        2.5153s |   0.53x
+```python
+plt.figure(figsize=(10, 6))
+plt.loglog(dataset_sizes, serial_times, 'o-', label='Serial', linewidth=2, markersize=8)
+plt.loglog(dataset_sizes, parallel_times, 's-', label='Parallel', linewidth=2, markersize=8)
+plt.xlabel('Dataset Size', fontsize=12)
+plt.ylabel('Time (seconds)', fontsize=12)
+plt.title('Serial vs Parallel Merge Sort Performance', fontsize=14)
+plt.legend(fontsize=11)
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig('parallel_performance.png')
+plt.show()
+```
+![parallel performance](parallel_performance.png)
