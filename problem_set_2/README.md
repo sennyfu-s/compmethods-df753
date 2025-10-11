@@ -162,4 +162,4 @@ plt.grid(True, alpha=0.3)
 plt.savefig("Performance_analysis_of_hashes.png")
 plt.show()
 ```
-![Bloom Filter Performance](Perfomance_analysis_of_hashes.png)
+![Bloom Filter Performance](Performance_analysis_of_hashes.png)
