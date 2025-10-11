@@ -319,7 +319,7 @@ for size in dataset_sizes:
     
     print(f"{size:>12} | {serial_time:>11.4f}s | {parallel_time:>13.4f}s | {speedup:>6.2f}x")
 ```
-Result tabel:
+Result table:
   Dataset Size | Serial Time | Parallel Time | Speedup
         1000 |      0.0016s |        0.4542s |   0.00x
         5000 |      0.0081s |        0.3760s |   0.02x
@@ -341,3 +341,25 @@ plt.savefig('parallel_performance.png')
 plt.show()
 ```
 ![parallel performance](parallel_performance.png)
+
+
+Excercise 3
+
+Excercise 4
+4a.
+The expansion of healthcare resources over the internet presents challenges. The digital divide remains a fundamental barrier. Rural areas often lack reliable broadband connectivity, while low-income populations may not afford devices or data plans necessary for telehealth services. For instance, during the COVID-19 pandemic, many elderly patients struggled to access virtual doctor appointments due to lack of smartphones or technical literacy, forcing them to forgo care or risk exposure by visiting clinics in person^1.
+Security and trust issues also pose risks in digital health. Medical data breaches have exposed millions of patient records, while consumer wearables often lack robust encryption standards. The 23andMe data breach in 2023 compromised genetic information of 6.9 million users^2, demonstrating vulnerabilities in health data systems. Additionally, patients must trust that their fitness trackers and health apps are accurately measuring vital signs. There’s a significant concern given that many devices lack FDA approval or rigorous validation studies. False readings could lead to missed diagnoses or unnecessary anxiety^3.
+Misinformation proliferates rapidly online, making it difficult for patients to distinguish credible medical advice from dangerous falsehoods. Social media algorithms amplify sensational health claims. For example, anti-vaccine misinformation on platforms like Facebook contributed to declining immunization rates and disease outbreaks. Even well-intentioned health information websites may present outdated protocols or fail to account for individual medical circumstances, leading patients to self-diagnose or pursue inappropriate treatments.
+Legal and regulatory frameworks have not kept pace with technological advancement. Telehealth regulations create barriers for interstate care and limiting specialist access in underserved regions. Furthermore, liability questions arise when algorithms provide diagnostic suggestions or when remote monitoring devices fail to alert providers about critical changes in patient status.
+These challenges require multifaceted solutions combining technological, policy reform, and digital literacy education to ensure that internet-based healthcare serves all populations equitably and safely.
+Reference:
+Care, University of North Carolina Health. “Almost Half of FDA-Approved Medical AI Devices Lack Clinical Validation Data.” News-Medical, August 26, 2024. https://www.news-medical.net/news/20240826/Almost-half-Of-FDA-approved-medical-AI-devices-lack-clinical-validation-data.aspx.
+Ramsetty, Anita, and Cristin Adams. “Impact of the Digital Divide in the Age of COVID-19.” Journal of the American Medical Informatics Association : JAMIA 27, no. 7 (2020): 1147–48. https://doi.org/10.1093/jamia/ocaa078.
+“Understanding the 23andMe Data Breach & Ensuring Cybersecurity.” Accessed October 11, 2025. https://www.risk-strategies.com/blog/understanding-the-23andme-data-breach-and-ensuring-cybersecurity.
+
+4b.
+My grandmother began using a continuous glucose monitor (CGM) last year to manage her Type 2 diabetes. The device transmits real-time blood sugar readings to her smartphone, allowing her to adjust insulin dosages and dietary choices throughout the day. This technology has improved her glucose control. However, the adoption process revealed barriers. Initially, she found the smartphone app overwhelming and required some level of deliberate. The device also required reliable internet connectivity, which is problematic when there’s internet fluctuation. Despite these challenges, I values the idea of continuous monitoring and the ability to share data directly with her endocrinologist during virtual appointments. From this, I saw how digital health tools offer benefits but require adequate technical support to be  accessible to elderly populations managing their health conditions.
+
+4c.
+The most challenging aspect was connecting systemic healthcare barriers to real-world personal experiences. While finding credible sources was straightforward, articulating abstract concepts like "the digital divide" is quite challenging. I struggled initially to avoid simply listing problems without providing sufficient examples that illustrated their real-world impact. Additionally, thinking example of personal connection to digital healthcare is surprisingly challenging. I was so used to the occurrence of digital product in my life, which overlooked the convenience and barriers that happened around me. This reflection helped me to slow down and appreciate how health informatics research have changed our medical system. Also, it is important for health informatics research to remain grounded in patient experiences.
+
