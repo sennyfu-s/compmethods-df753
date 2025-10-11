@@ -78,7 +78,9 @@ def evaluate_bloom_filter(typos_data):
 evaluate_bloom_filter(typos_data)
 ```
 Result: 
+
 Bloom filter created with size: 10000000
+
 Good suggestions: 22907/50000 (45.81%) (I've tried with higher bit, ie 10^8, but it only increases to ~47%)
 
 1c.
@@ -358,6 +360,7 @@ plt.show()
 Excercise 3
 
 
+
 Excercise 4
 
 4a.
@@ -375,9 +378,23 @@ Ramsetty, Anita, and Cristin Adams. “Impact of the Digital Divide in the Age o
 
 “Understanding the 23andMe Data Breach & Ensuring Cybersecurity.” Accessed October 11, 2025. https://www.risk-strategies.com/blog/understanding-the-23andme-data-breach-and-ensuring-cybersecurity.
 
+
 4b.
 My grandmother began using a continuous glucose monitor (CGM) last year to manage her Type 2 diabetes. The device transmits real-time blood sugar readings to her smartphone, allowing her to adjust insulin dosages and dietary choices throughout the day. This technology has improved her glucose control. However, the adoption process revealed barriers. Initially, she found the smartphone app overwhelming and required some level of deliberate. The device also required reliable internet connectivity, which is problematic when there’s internet fluctuation. Despite these challenges, I values the idea of continuous monitoring and the ability to share data directly with her endocrinologist during virtual appointments. From this, I saw how digital health tools offer benefits but require adequate technical support to be  accessible to elderly populations managing their health conditions.
+
 
 4c.
 The most challenging aspect was connecting systemic healthcare barriers to real-world personal experiences. While finding credible sources was straightforward, articulating abstract concepts like "the digital divide" is quite challenging. I struggled initially to avoid simply listing problems without providing sufficient examples that illustrated their real-world impact. Additionally, thinking example of personal connection to digital healthcare is surprisingly challenging. I was so used to the occurrence of digital product in my life, which overlooked the convenience and barriers that happened around me. This reflection helped me to slow down and appreciate how health informatics research have changed our medical system. Also, it is important for health informatics research to remain grounded in patient experiences.
 
+
+Excercise 5
+
+What is the data about? The "Diabetes 130-US hospitals for years 1999-2008" dataset contains 101,766 clinical records from diabetic patients across 130 US hospitals, including patient demographics, medication information, lab procedures, and hospital readmission outcomes within 30 days.
+
+Where did you find it? The dataset is available from the UCI Machine Learning Repository at https://archive.ics.uci.edu/ml/datasets/diabetes+130-us+hospitals+for+years+1999-2008 as a direct CSV download.
+
+What license was specified? The dataset is released under Creative Commons Attribution 4.0 International (CC BY 4.0) license, which permits reuse.
+
+Why do you think it is interesting? Hospital readmissions for diabetic patients are a quality metric with financial penalties, making predictive analysis of readmission risk clinically valuable.
+
+Give an example of two questions you could explore with this data. 1: "What clinical factors (medication changes, number of procedures, lab tests, length of stay) most strongly predict 30-day readmission for diabetic patients?" 2: "How do readmission rates vary across age groups when diabetic medications are adjusted during hospitalization versus when they remain unchanged?"
