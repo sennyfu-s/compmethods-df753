@@ -359,7 +359,134 @@ plt.show()
 
 Excercise 3
 
+3a.
+```python
+# Read FASTA file and extract chromosome 1
+chr1_sequence = ""
+in_chr1 = False
 
+with open('human_g1k_v37.fasta', 'r') as f:
+    for line in f:
+        line = line.strip()
+        if line.startswith('>'):
+            if in_chr1:
+                break
+            if line.startswith('>1 ') or line.startswith('>1\t'):
+                in_chr1 = True
+        elif in_chr1:
+            chr1_sequence += line.upper()
+
+print(f"\nChromosome 1 length: {len(chr1_sequence):,} nucleotides")
+```
+Result: Chromosome 1 length: 12,376,584 nucleotides
+```python
+# Generate all overlapping 15-mers from chromosome 1
+k = 15
+valid_kmers = []
+
+for i in range(len(chr1_sequence) - k + 1):
+    kmer = chr1_sequence[i:i+k]
+    
+    # Exclude 15-mers with more than two Ns
+    n_count = kmer.count('N')
+    if n_count <= 2:
+        valid_kmers.append(kmer)
+
+print(f"Total 15-mers generated: {len(chr1_sequence) - k + 1:,}")
+print(f"Valid 15-mers (≤2 Ns): {len(valid_kmers):,}")
+```
+Total 15-mers generated: 12,376,570
+
+Valid 15-mers (≤2 Ns): 12,016,522
+```python
+# Count the true number of distinct 15-mers
+distinct_kmers = set(valid_kmers)
+true_distinct_count = len(distinct_kmers)
+
+print(f"True number of distinct 15-mers: {true_distinct_count:,}")
+```
+Result: True number of distinct 15-mers: 9,828,898
+
+3b.
+```python
+# Hash family implementation
+M = 2**61 - 1
+k = 15
+
+# Encoding for nucleotides: c_i ∈ {1, 2, 3, 4, 5, 6}
+# A=1, C=2, G=3, T=4, N=5, X=6
+def encode_nucleotide(nuc):
+    encoding = {'A': 1, 'C': 2, 'G': 3, 'T': 4, 'N': 5, 'X': 6}
+    return encoding.get(nuc, 6)
+
+def rolling_hash(sequence, a):
+    hash_value = 0
+    for i, nucleotide in enumerate(sequence):
+        c_i = encode_nucleotide(nucleotide)
+        hash_value = (hash_value + c_i * pow(a, k - 1 - i, M)) % M
+    return hash_value
+```
+
+3c.
+```python
+import random
+import numpy as np
+```
+```python
+def estimate_distinct_count(kmers, num_hash_functions):
+    # Generate random odd integers
+    random.seed(42)
+    a_values = []
+    for _ in range(num_hash_functions):
+        a = random.randrange(1, M, 2)
+        a_values.append(a)
+    
+    min_hashes = [float('inf')] * num_hash_functions
+    
+    # Compute hashes for all k-mers
+    for kmer in kmers:
+        for j, a in enumerate(a_values):
+            h = rolling_hash(kmer, a)
+            if h < min_hashes[j]:
+                min_hashes[j] = h
+    
+    # Normalize to [0,1] and compute estimates
+    normalized_mins = [min_hash / M for min_hash in min_hashes]
+    
+    # Estimate distinct count for each hash function
+    estimates = []
+    for norm_min in normalized_mins:
+        if norm_min > 0:
+            estimate = 1.0 / norm_min - 1
+            estimates.append(estimate)
+    
+    # Combine results
+    final_estimate = np.mean(estimates)
+    
+    return final_estimate, estimates
+```
+```python
+# Run experiments with different numbers of hash functions
+hash_function_counts = [1, 2, 5, 10]
+results = {}
+
+for num_hashes in hash_function_counts:
+    estimate, individual_estimates = estimate_distinct_count(valid_kmers, num_hashes)
+    results[num_hashes] = estimate
+    error = abs(estimate - true_distinct_count) / true_distinct_count * 100
+
+
+print(f"{'Hash Functions':<20} {'Estimate':<20} {'Error %':<15}")
+for num_hashes, estimate in results.items():
+    error = abs(estimate - true_distinct_count) / true_distinct_count * 100
+    print(f"{num_hashes:<20} {estimate:>15,.0f} {error:>14.2f}%")
+```
+Hash Functions       Estimate             Error %        
+------------------------------------------------------------
+1                          1,868,870          80.99%
+2                          5,057,046          48.55%
+5                         12,410,740          26.27%
+10                        15,201,503          54.66%
 
 Excercise 4
 
