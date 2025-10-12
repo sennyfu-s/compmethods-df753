@@ -293,7 +293,7 @@ for size in dataset_sizes:
     speedup = serial_time / parallel_time
     speedups.append(speedup)
     
-    print(f"{size:>12} | {serial_time:>11.4f}s | {parallel_time:>13.4f}s | {speedup:>6.2f}x")
+    print(f"{size} | {serial_time:.4f}s | {parallel_time:.4f}s | {speedup:.2f}x")
 
 plt.figure(figsize=(10, 6))
 plt.loglog(dataset_sizes, serial_times, 'o-', label='Serial')
@@ -324,7 +324,7 @@ with open('human_g1k_v37.fasta', 'r') as f:
         elif in_chr1:
             chr1_sequence += line.upper()
 
-print(f"\nChromosome 1 length: {len(chr1_sequence):,} nucleotides")
+print(f"Chromosome 1 length: {len(chr1_sequence):,} nucleotides")
 
 # Generate all overlapping 15-mers from chromosome 1
 k = 15
@@ -413,10 +413,10 @@ for num_hashes in hash_function_counts:
     error = abs(estimate - true_distinct_count) / true_distinct_count * 100
 
 
-print(f"{'Hash Functions':<20} {'Estimate':<20} {'Error %':<15}")
+print(f"{'Hash Functions'} {'Estimate'} {'Error %'}")
 for num_hashes, estimate in results.items():
     error = abs(estimate - true_distinct_count) / true_distinct_count * 100
-    print(f"{num_hashes:<20} {estimate:>15,.0f} {error:>14.2f}%")
+    print(f"{num_hashes} {estimate:.0f} {error:.2f}%")
 
 
 #3d.
