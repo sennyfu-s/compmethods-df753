@@ -161,7 +161,6 @@ plt.xscale('log')
 plt.xlabel('Bits in Bloom Filter')
 plt.ylabel('Percentage')
 plt.legend()
-plt.grid(True, alpha=0.3)
 plt.savefig("Performance_analysis_of_hashes.png")
 plt.show()
 ```
@@ -343,13 +342,11 @@ Result table:
       500000 |      1.3353s |        2.5153s |   0.53x
 ```python
 plt.figure(figsize=(10, 6))
-plt.loglog(dataset_sizes, serial_times, 'o-', label='Serial', linewidth=2, markersize=8)
-plt.loglog(dataset_sizes, parallel_times, 's-', label='Parallel', linewidth=2, markersize=8)
+plt.loglog(dataset_sizes, serial_times, 'o-', label='Serial')
+plt.loglog(dataset_sizes, parallel_times, 's-', label='Parallel')
 plt.xlabel('Dataset Size', fontsize=12)
 plt.ylabel('Time (seconds)', fontsize=12)
-plt.title('Serial vs Parallel Merge Sort Performance', fontsize=14)
 plt.legend(fontsize=11)
-plt.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.savefig('parallel_performance.png')
 plt.show()
@@ -481,12 +478,43 @@ for num_hashes, estimate in results.items():
     error = abs(estimate - true_distinct_count) / true_distinct_count * 100
     print(f"{num_hashes:<20} {estimate:>15,.0f} {error:>14.2f}%")
 ```
-Hash Functions       Estimate             Error %        
-------------------------------------------------------------
+Hash Functions       Estimate             Error %
+
 1                          1,868,870          80.99%
+
 2                          5,057,046          48.55%
+
 5                         12,410,740          26.27%
+
 10                        15,201,503          54.66%
+
+3d.
+```python
+import matplotlib.pyplot as plt
+```
+```python
+hash_counts = list(results.keys())
+estimates = list(results.values())
+
+plt.figure(figsize=(10, 6))
+plt.plot(hash_counts, estimates, 'o-', label='Estimated')
+plt.axhline(y=true_distinct_count, color='r', linestyle='--', label='True Count')
+plt.xlabel('Number of Hash Functions', fontsize=12)
+plt.ylabel('Distinct 15-mer Count', fontsize=12)
+plt.legend()
+plt.xscale('log')
+plt.tight_layout()
+plt.savefig('distinct_count_estimation.png')
+plt.show()
+```
+![distinct_count_estimation](distinct_count_estimation.png)
+The estimation accuracy improves as more hash functions are combined with 10 hashes as an outlier. With a single hash function, the estimate is highly variable and can have substantial error because it relies on a single random sample. As I increase the number of hash functions, the estimates become more stable through averaging. Using only a single hash makes the estimate unreliable because it's sensitive to the particular random parameter chosen.
+
+3e.
+For selecting values of parameter a, I used Python's random number generator to produce odd integers in the range [1, M) where M = 2^61 - 1. Odd integers are required to ensure the hash function has good distribution properties. The randomness ensures independence between different hash functions.
+
+For optimizations, I implemented rolling hash computation that processes each k-mer in O(k) time by directly computing the polynomial hash. While removing the first character and adding the last would be O(1) per step, the current implementation is sufficient given that k=15 is small. I also pre-encoded nucleotides to integers and used Python's built-in pow(a, exp, M) for efficient modular exponentiation.
+
 
 Excercise 4
 
