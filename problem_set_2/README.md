@@ -478,15 +478,15 @@ for num_hashes, estimate in results.items():
     error = abs(estimate - true_distinct_count) / true_distinct_count * 100
     print(f"{num_hashes:<20} {estimate:>15,.0f} {error:>14.2f}%")
 ```
-Hash Functions       Estimate             Error %
+Hash Functions | Estimate | Error %
 
-1                          1,868,870          80.99%
+1 | 1,868,870 | 80.99%
 
-2                          5,057,046          48.55%
+2 | 5,057,046 | 48.55%
 
-5                         12,410,740          26.27%
+5 | 12,410,740 | 26.27%
 
-10                        15,201,503          54.66%
+10 | 15,201,503 | 54.66%
 
 3d.
 ```python
