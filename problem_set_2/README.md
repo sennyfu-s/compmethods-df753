@@ -323,23 +323,23 @@ for size in dataset_sizes:
     speedup = serial_time / parallel_time
     speedups.append(speedup)
     
-    print(f"{size:>12} | {serial_time:>11.4f}s | {parallel_time:>13.4f}s | {speedup:>6.2f}x")
+    print(f"{size} | {serial_time:.4f}s | {parallel_time:.4f}s | {speedup:.2f}x")
 ```
 Result table:
 
-  Dataset Size | Serial Time | Parallel Time | Speedup
+Dataset Size | Serial Time | Parallel Time | Speedup
   
-        1000 |      0.0016s |        0.4542s |   0.00x
+1000 | 0.0016s | 0.4542s | 0.00x
         
-        5000 |      0.0081s |        0.3760s |   0.02x
+5000 | 0.0081s | 0.3760s | 0.02x
         
-       10000 |      0.0178s |        0.4775s |   0.04x
+10000 | 0.0178s | 0.4775s | 0.04x
        
-       50000 |      0.1037s |        0.7822s |   0.13x
+50000 | 0.1037s | 0.7822s | 0.13x
        
-      100000 |      0.2194s |        1.0988s |   0.20x
+100000 | 0.2194s | 1.0988s | 0.20x
       
-      500000 |      1.3353s |        2.5153s |   0.53x
+500000 | 1.3353s | 2.5153s | 0.53x
 ```python
 plt.figure(figsize=(10, 6))
 plt.loglog(dataset_sizes, serial_times, 'o-', label='Serial')
@@ -373,7 +373,7 @@ with open('human_g1k_v37.fasta', 'r') as f:
         elif in_chr1:
             chr1_sequence += line.upper()
 
-print(f"\nChromosome 1 length: {len(chr1_sequence):,} nucleotides")
+print(f"Chromosome 1 length: {len(chr1_sequence):,} nucleotides")
 ```
 Result: Chromosome 1 length: 12,376,584 nucleotides
 ```python
@@ -473,10 +473,10 @@ for num_hashes in hash_function_counts:
     error = abs(estimate - true_distinct_count) / true_distinct_count * 100
 
 
-print(f"{'Hash Functions':<20} {'Estimate':<20} {'Error %':<15}")
+print(f"{'Hash Functions'} {'Estimate'} {'Error %'}")
 for num_hashes, estimate in results.items():
     error = abs(estimate - true_distinct_count) / true_distinct_count * 100
-    print(f"{num_hashes:<20} {estimate:>15,.0f} {error:>14.2f}%")
+    print(f"{num_hashes} {estimate:.0f} {error:.2f}%")
 ```
 Hash Functions | Estimate | Error %
 
