@@ -29,6 +29,7 @@ cancer_ids = [id_elem.text for id_elem in cancer_tree.findall('.//Id')]
 import json
 
 # Process in batches
+all_ids = alzheimer_ids + cancer_ids
 batch_size = 200
 papers_metadata = {}
 
@@ -80,6 +81,10 @@ overlap = alzheimer_set.intersection(cancer_set)
 print(f"Number of overlapping papers: {len(overlap)}")
 print(f"Overlapping PubMed IDs: {overlap}")
 ```
+Number of overlapping papers: 4
+
+Overlapping PubMed IDs: {'40395755', '40326981', '40949928', '40800467'}
+
 
 1d.
 Current method in 1b could ensure all sections are included. abstract is stored as one continuous string rather than a structured format (like a dictionary with separate keys for each section. For example for PMID:20966393, we can see subtitle rationale, objectives, etc. as the beginning of each paragraph, but the code stored all sections as a chunk.
