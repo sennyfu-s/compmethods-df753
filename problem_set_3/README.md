@@ -91,3 +91,85 @@ Current method in 1b could ensure all sections are included. abstract is stored 
 
 
 Excercise 2
+```python
+!pip install torch transformers
+from transformers import AutoTokenizer, AutoModel
+
+# Load model and tokenizer
+tokenizer = AutoTokenizer.from_pretrained('allenai/specter')
+model = AutoModel.from_pretrained('allenai/specter')
+```
+```python
+import json
+
+# Load the papers dictionary
+with open('papers_metadata.json', 'r', encoding='utf-8') as f:
+    papers = json.load(f)
+```
+```python
+import tqdm
+
+# Create embeddings dictionary
+embeddings = {}
+
+for pmid, paper in tqdm.tqdm(papers.items()):
+    data = paper["ArticleTitle"] + tokenizer.sep_token + paper["AbstractText"]
+    inputs = tokenizer(
+        data, padding=True, truncation=True, return_tensors="pt", max_length=512
+    )
+    result = model(**inputs)
+    embeddings[pmid] = result.last_hidden_state[:, 0, :].detach().numpy()[0]
+
+# turn our dictionary into a list
+embeddings = [embeddings[pmid] for pmid in papers.keys()]
+```
+```python
+from sklearn import decomposition
+import pandas as pd
+
+# Identify the first three PC in PCA
+pca = decomposition.PCA(n_components=3)
+embeddings_pca = pd.DataFrame(
+    pca.fit_transform(embeddings),
+    columns=['PC0', 'PC1', 'PC2']
+)
+embeddings_pca["query"] = [paper["query"] for paper in papers.values()]
+```
+```python
+import matplotlib.pyplot as plt
+
+# 3 subplots
+fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+# PC0 vs PC1
+for query in ['Alzheimer', 'cancer']:
+    subset = embeddings_pca[embeddings_pca['query'] == query]
+    axes[0].scatter(subset['PC0'], subset['PC1'], label=query, alpha=0.6)
+axes[0].set_xlabel('PC0')
+axes[0].set_ylabel('PC1')
+axes[0].set_title('PC0 vs PC1')
+axes[0].legend()
+
+# PC0 vs PC2
+for query in ['Alzheimer', 'cancer']:
+    subset = embeddings_pca[embeddings_pca['query'] == query]
+    axes[1].scatter(subset['PC0'], subset['PC2'], label=query, alpha=0.6)
+axes[1].set_xlabel('PC0')
+axes[1].set_ylabel('PC2')
+axes[1].set_title('PC0 vs PC2')
+axes[1].legend()
+
+# PC1 vs PC2
+for query in ['Alzheimer', 'cancer']:
+    subset = embeddings_pca[embeddings_pca['query'] == query]
+    axes[2].scatter(subset['PC1'], subset['PC2'], label=query, alpha=0.6)
+axes[2].set_xlabel('PC1')
+axes[2].set_ylabel('PC2')
+axes[2].set_title('PC1 vs PC2')
+axes[2].legend()
+
+plt.tight_layout()
+plt.savefig('PCA_plot')
+plt.show()
+```
+![PCA_plot]('PCA_plot')
