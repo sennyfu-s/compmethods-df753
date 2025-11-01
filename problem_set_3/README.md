@@ -332,6 +332,8 @@ df = pd.read_csv(url, compression='zip')
 ```
 The Diabetes 130-US hospitals dataset is released under the Creative Commons Attribution 4.0 International (CC BY 4.0) license, which explicitly allows for the sharing and adaptation of the datasets for any purpose.
 ```python
+import matplotlib.pyplot as plt
+
 # Age distribution of diabetic patients
 plt.figure(figsize=(10, 5))
 df['age'].value_counts().sort_index().plot(kind='bar')
@@ -342,3 +344,38 @@ plt.tight_layout()
 plt.show()
 ```
 ![age distribution](age_distribution.png)
+Finding: Most diabetic patients in the dataset are in older age groups, concentrated in 60-80 age range.
+```python
+# Publishers claimed there are missing data
+print("Missing values:")
+missing_data = df.isnull().sum()
+print(missing_data[missing_data > 0])
+
+for col in df.columns:
+    if df[col].dtype == 'object':
+        question_marks = (df[col] == '?').sum()
+        if question_marks > 0:
+            print(f"{col}: {question_marks} missing")
+```
+Missing values:
+max_glu_serum    96420,
+A1Cresult        84748,
+dtype: int64,
+race: 2273 missing,
+weight: 98569 missing,
+payer_code: 40256 missing,
+medical_specialty: 49949 missing,
+diag_1: 21 missing,
+diag_2: 358 missing,
+diag_3: 1423 missing,
+```python
+import numpy as np
+
+# Cleaning
+# Replace '?' with NaN
+df_clean = df.replace('?', np.nan)
+
+# Drop columns with >50% missing data (including 'weight', 'max_glu_serum', 'A1Cresult')
+cols_to_drop = missing_pct[missing_pct > 50].index.tolist()
+df_clean = df_clean.drop(columns=cols_to_drop)
+```
