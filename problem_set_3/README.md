@@ -173,3 +173,34 @@ plt.savefig('PCA_plot')
 plt.show()
 ```
 ![PCA_plot](PCA_plot.png)
+
+The PCA demonstrates separation between Alzheimer's and cancer papers, particularly in the PC0 vs PC1 plot. This strong separation indicates that embeddings successfully capture the semantic and topical differences between these two medical research domains. The PC0 vs PC2 plot also shows good separation, though with slightly more overlap in the central region. However, the PC1 vs PC2 plot exhibits substantial mixing between the two categories, suggesting these components capture shared medical terminology rather than topic-specific distinctions. The key takeaway may be the PC0 effectively encoding the primary differences between Alzheimer's and cancer research, while higher components capture more shared characteristics across both domains.
+
+
+Excercise 3
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x):
+    return x**3
+
+f_prime_3 = 27
+x0 = 3
+
+# Create h values
+h = np.logspace(-10, 0)
+
+# Calculate difference quotient
+difference_quotient = (f(x0 + h) - f(x0)) / h
+
+# Calculate absolute difference
+absolute_difference = np.abs(difference_quotient - f_prime_3)
+
+# Plot on log-log scale
+plt.loglog(h, absolute_difference)
+plt.xlabel('h')
+plt.ylabel('Absolute difference')
+plt.title('Absolute difference between difference quotient and f\'(3)')
+plt.show()
+```
