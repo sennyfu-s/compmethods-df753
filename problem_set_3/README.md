@@ -204,3 +204,98 @@ plt.ylabel('Absolute difference')
 plt.title('Absolute difference between difference quotient and f\'(3)')
 plt.show()
 ```
+![absolute difference](absolute_difference.png)
+As h decreases from 1 toward approximately 10^-8, the absolute difference decreases linearly on the log-log plot, demonstrating that the difference quotient converges toward the true derivative value of 27 as h gets smaller. However, around h = 10^-8, the error reaches a minimum and then begins to increase as h continues to decrease. This may due to numerical precision limitations in floating-point arithmetic.
+
+
+Excercise 4
+```python
+import numpy as np
+
+# Define function
+def sir_euler(S0, I0, R0, beta, gamma, T_max, dt=0.1):
+    N = S0 + I0 + R0
+    n_steps = int(T_max / dt)
+    
+    S = np.zeros(n_steps + 1)
+    I = np.zeros(n_steps + 1)
+    R = np.zeros(n_steps + 1)
+    t = np.zeros(n_steps + 1)
+    
+    S[0] = S0
+    I[0] = I0
+    R[0] = R0
+    
+    for i in range(n_steps):
+        t[i+1] = t[i] + dt
+        S[i+1] = S[i] + dt * (-beta * S[i] * I[i] / N)
+        I[i+1] = I[i] + dt * (beta * S[i] * I[i] / N - gamma * I[i])
+        R[i+1] = R[i] + dt * (gamma * I[i])
+    
+    return t, I
+```
+```python
+import matplotlib.pyplot as plt
+
+# Initial conditions
+N = 137000
+S0 = N - 1
+I0 = 1
+R0 = 0
+beta = 2
+gamma = 1
+
+
+t, I = sir_euler(S0, I0, R0, beta, gamma, T_max=50, dt=0.01)
+
+# I < 1
+idx_below_1 = np.where(I < 1)[0]
+if len(idx_below_1) > 0:
+    cutoff_idx = idx_below_1[0]
+    t_plot = t[:cutoff_idx]
+    I_plot = I[:cutoff_idx]
+else:
+    t_plot = t
+    I_plot = I
+
+plt.plot(t_plot, I_plot)
+plt.xlabel('Time (days)')
+plt.ylabel('Number of infected individuals')
+plt.title('SIR Model: Infected individuals over time')
+plt.show()
+```
+```python
+# Find peak and peak number
+peak_idx = np.argmax(I)
+peak_time = t[peak_idx]
+peak_infected = I[peak_idx]
+print(peak_infected)
+print(peak_time)
+```
+Peak time: 11.74 days
+
+Peak infected: 21070 people
+```python
+# Parameter ranges
+beta_values = np.linspace(1.5, 2.5, 20)
+gamma_values = np.linspace(0.5, 1.5, 20)
+
+# Set grid
+peak_times = np.zeros((len(gamma_values), len(beta_values)))
+
+for i, gamma in enumerate(gamma_values):
+    for j, beta in enumerate(beta_values):
+        t, I = sir_euler(S0, I0, R0, beta, gamma, T_max=50, dt=0.01)
+        peak_times[i, j] = t[np.argmax(I)]
+
+# Plot
+plt.figure(figsize=(8, 6))
+plt.imshow(peak_times, extent=[beta_values[0], beta_values[-1], gamma_values[0], gamma_values[-1]], 
+           origin='lower', aspect='auto', cmap='viridis')
+plt.colorbar(label='Time of peak (days)')
+plt.xlabel('Beta')
+plt.ylabel('Gamma')
+plt.title('Time of Peak Infection')
+plt.show()
+```
+![Time of peak infection](time_of_peak_infection.png)
