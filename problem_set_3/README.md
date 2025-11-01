@@ -318,4 +318,4 @@ plt.ylabel('Gamma')
 plt.title('Number of Individuals Infected at Peak')
 plt.show()
 ```
-![# of individuals infected](#_of_individuals_infected.png)
+![# of individuals infected](number_of_individuals_infected.png)
