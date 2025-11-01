@@ -299,3 +299,23 @@ plt.title('Time of Peak Infection')
 plt.show()
 ```
 ![Time of peak infection](time_of_peak_infection.png)
+```python
+# Create grid
+peak_infected_grid = np.zeros((len(gamma_values), len(beta_values)))
+
+for i, gamma in enumerate(gamma_values):
+    for j, beta in enumerate(beta_values):
+        t, I = sir_euler(S0, I0, R0, beta, gamma, T_max=50, dt=0.01)
+        peak_infected_grid[i, j] = np.max(I)
+
+# Plot
+plt.figure(figsize=(8, 6))
+plt.imshow(peak_infected_grid, extent=[beta_values[0], beta_values[-1], gamma_values[0], gamma_values[-1]], 
+           origin='lower', aspect='auto', cmap='viridis')
+plt.colorbar(label='Number infected at peak')
+plt.xlabel('Beta')
+plt.ylabel('Gamma')
+plt.title('Number of Individuals Infected at Peak')
+plt.show()
+```
+![# of individuals infected](#_of_individuals_infected.png)
