@@ -172,4 +172,4 @@ plt.tight_layout()
 plt.savefig('PCA_plot')
 plt.show()
 ```
-![PCA_plot]('PCA_plot')
+![PCA_plot]('PCA_plot.png')
