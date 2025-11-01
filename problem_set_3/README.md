@@ -321,3 +321,24 @@ plt.show()
 ![# of individuals infected](number_of_individuals_infected.png)
 
 Excercise 5
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load the diabetes dataset
+url = "https://archive.ics.uci.edu/ml/machine-learning-databases/00296/dataset_diabetes.zip"
+df = pd.read_csv(url, compression='zip')
+```
+The Diabetes 130-US hospitals dataset is released under the Creative Commons Attribution 4.0 International (CC BY 4.0) license, which explicitly allows for the sharing and adaptation of the datasets for any purpose.
+```python
+# Age distribution of diabetic patients
+plt.figure(figsize=(10, 5))
+df['age'].value_counts().sort_index().plot(kind='bar')
+plt.title('Age Distribution of Diabetic Patients')
+plt.xlabel('Age Group')
+plt.ylabel('Number of Patients')
+plt.tight_layout()
+plt.show()
+```
+![age distribution](age_distribution.png)
