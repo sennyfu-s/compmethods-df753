@@ -112,35 +112,25 @@ print("Test 4 (mismatch_penalty=2):")
 print(f"seq1 = {seq1}")
 print(f"seq2 = {seq2}")
 print(f"score = {score}\n")
-
-# 5
-seq1, seq2, score = align('tgcatcgagaccctacgtgac', 'actagacctagcatcgac', match=2, gap_penalty=2, mismatch_penalty=2)
-print("Test 5 (match=2, gap_penalty=2, mismatch_penalty=2):")
-print(f"seq1 = {seq1}")
-print(f"seq2 = {seq2}")
-print(f"score = {score}")
 ```
 Test 1 (default parameters):
-seq1 = agacccta-cgt-gac
-seq2 = aga-cctagcatcgac
+seq1 = agacccta-cgt-gac,
+seq2 = aga-cctagcatcgac,
 score = 8
 
 Test 2 (gap_penalty=2):
-seq1 = gcatcga
-seq2 = gcatcga
+seq1 = gcatcga,
+seq2 = gcatcga,
 score = 7
 
 Test 3 (match=2):
-seq1 = atcgagacccta-cgt-gac
-seq2 = a-ctaga-cctagcatcgac
+seq1 = atcgagacccta-cgt-gac,
+seq2 = a-ctaga-cctagcatcgac,
 score = 22
 
 Test 4 (mismatch_penalty=2):
-seq1 = gcatcga
-seq2 = gcatcga
+seq1 = gcatcga,
+seq2 = gcatcga,
 score = 7
 
-Test 5 (match=2, gap_penalty=2, mismatch_penalty=2):
-seq1 = agacccta-cgt-gac
-seq2 = aga-cctagcatcgac
-score = 16
+Test 1 produces a balanced alignment where matches are rewarded and gaps/mismatches are equally penalized. Test 2 makes gaps more expensive, resulting in alignments with fewer gaps but possibly more mismatches. The score is lower compared to test 1 because gaps cost more. Test 3 rewards matches more, increasing the overall score for the same alignment pattern. Test 4 makes mismatches more expensive, favoring alignments with more gaps over mismatches (score decreases).
