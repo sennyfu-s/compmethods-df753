@@ -197,4 +197,4 @@ plt.legend()
 plt.title('Rice Types in 2D PCA Space')
 plt.show()
 ```
-![PCA](PCA)
+![PCA](PCA.png)
