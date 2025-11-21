@@ -39,7 +39,7 @@ Step size h (1e-5): Balances accurate derivative approximation with numerical st
 
 Tolerance (1e-6): Stops when parameter changes are negligible.
 ```python
-a2, b2 = 0.8, 0.8
+a2, b2 = 0.7, 0.3
 
 for i in range(1000):
     e2 = float(requests.get(f"http://ramcdougal.com/cgi-bin/error_function.py?a={a2}&b={b2}", 
@@ -57,7 +57,7 @@ for i in range(1000):
     
     a2, b2 = a2_new, b2_new
 
-# Compare with previous max
+# Compare with previous results
 if e < e2:
     print(f"gm: a={a:.3f}, b={b:.3f}, error={e:.3f}")
     print(f"lm: a={a2:.3f}, b={b2:.3f}, error={e2:.3f}")
@@ -65,7 +65,7 @@ else:
     print(f"gm: a={a2:.3f}, b={b2:.3f}, error={e2:.3f}")
     print(f"lm: a={a:.3f}, b={b:.3f}, error={e:.3f}")
 ```
-Global minimum: a=0.216, b=0.689, error=1.100
+Global minimum: a=0.712, b=0.169, error=1.000
 Local minimum: a=0.216, b=0.689, error=1.100
 
 Exercise 2
