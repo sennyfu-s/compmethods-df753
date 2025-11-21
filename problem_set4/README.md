@@ -198,3 +198,139 @@ plt.title('Rice Types in 2D PCA Space')
 plt.show()
 ```
 ![PCA](PCA.png)
+The graph suggests that k-nearest neighbors would be moderately effective for classifying rice types in this 2-dimensional PCA space. While the two varieties show somewhat distinct clustering tendencies, there is substantial overlap throughout the central region. This overlap means that k-NN will perform reasonably well in areas where the classes are clearly separated, but accuracy will suffer for points in the mixed central zone.
+```python
+class QuadTree:
+    def __init__(self, points, classes, max_points=10):
+        self.points = points
+        self.classes = classes
+        self.max_points = max_points
+        self.children = None
+        
+        if len(points) > max_points:
+            self._subdivide()
+    
+    def _subdivide(self):
+        x_mid = (self.points[:, 0].min() + self.points[:, 0].max()) / 2
+        y_mid = (self.points[:, 1].min() + self.points[:, 1].max()) / 2
+        
+        masks = [
+            (self.points[:, 0] <= x_mid) & (self.points[:, 1] <= y_mid),
+            (self.points[:, 0] > x_mid) & (self.points[:, 1] <= y_mid),
+            (self.points[:, 0] <= x_mid) & (self.points[:, 1] > y_mid),
+            (self.points[:, 0] > x_mid) & (self.points[:, 1] > y_mid)
+        ]
+        
+        self.children = []
+        for mask in masks:
+            if mask.sum() > 0:
+                self.children.append(QuadTree(self.points[mask], self.classes[mask], self.max_points))
+    
+    def contains(self, x, y):
+        x_min, x_max = self.points[:, 0].min(), self.points[:, 0].max()
+        y_min, y_max = self.points[:, 1].min(), self.points[:, 1].max()
+        return x_min <= x <= x_max and y_min <= y <= y_max
+    
+    def all_points(self):
+        if self.children is None:
+            return self.points, self.classes
+        all_pts = []
+        all_cls = []
+        for child in self.children:
+            pts, cls = child.all_points()
+            all_pts.append(pts)
+            all_cls.append(cls)
+        return np.vstack(all_pts), np.concatenate(all_cls)
+```
+```python
+def knn_classify(tree, x, y, k):
+    def find_containing_tree(tree, x, y):
+        if tree.children is None:
+            return tree
+        for child in tree.children:
+            if child.contains(x, y):
+                return find_containing_tree(child, x, y)
+        return tree
+    
+    start_tree = find_containing_tree(tree, x, y)
+    
+    def search_radius(tree, x, y, radius):
+        points, classes = tree.all_points()
+        x_min, x_max = points[:, 0].min(), points[:, 0].max()
+        y_min, y_max = points[:, 1].min(), points[:, 1].max()
+        
+        if (x - radius > x_max or x + radius < x_min or 
+            y - radius > y_max or y + radius < y_min):
+            return [], []
+        
+        distances = np.sqrt((points[:, 0] - x)**2 + (points[:, 1] - y)**2)
+        within = distances <= radius
+        return points[within], classes[within]
+    
+    def get_all_within_radius(tree, x, y, radius):
+        if tree.children is None:
+            return search_radius(tree, x, y, radius)
+        
+        all_pts = []
+        all_cls = []
+        pts, cls = search_radius(tree, x, y, radius)
+        if len(pts) > 0:
+            all_pts.append(pts)
+            all_cls.append(cls)
+        
+        for child in tree.children:
+            pts, cls = get_all_within_radius(child, x, y, radius)
+            if len(pts) > 0:
+                all_pts.append(pts)
+                all_cls.append(cls)
+        
+        if len(all_pts) == 0:
+            return np.array([]).reshape(0, 2), np.array([])
+        return np.vstack(all_pts), np.concatenate(all_cls)
+    
+    current_tree = start_tree
+    while True:
+        points, classes = current_tree.all_points()
+        if len(points) >= k:
+            break
+        if hasattr(current_tree, '_parent'):
+            current_tree = current_tree._parent
+        else:
+            points, classes = tree.all_points()
+            break
+    
+    distances = np.sqrt((points[:, 0] - x)**2 + (points[:, 1] - y)**2)
+    min_i = np.argpartition(distances, min(k, len(distances)-1))[:k]
+    nearest_classes = classes[min_i]
+    
+    return pd.Series(nearest_classes).mode()[0]
+```
+```python
+X = np.column_stack([pc0, pc1])
+y = data['Class'].values
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+tree = QuadTree(X_train, y_train)
+```
+```python
+predictions_k1 = [knn_classify(tree, x, y, 1) for x, y in X_test]
+cm_k1 = confusion_matrix(y_test, predictions_k1)
+print(cm_k1)
+```
+Confusion Matrix (k=1):
+
+[[445  73]
+
+ [ 54 571]]
+ ```python
+predictions_k5 = [knn_classify(tree, x, y, 5) for x, y in X_test]
+cm_k5 = confusion_matrix(y_test, predictions_k5)
+print(cm_k5)
+```
+Confusion Matrix (k=5):
+
+[[467  51]
+
+ [ 43 582]]
+
+For k=1, the classifier achieved 445 correct Cammeo predictions and 571 correct Osmancik predictions, with 73 Cammeo samples misclassified as Osmancik and 54 Osmancik samples misclassified as Cammeo, yielding an accuracy of approximately 88.9%. For k=5, performance improved slightly with 467 correct Cammeo predictions and 582 correct Osmancik predictions, while misclassifications decreased to 51 and 43 respectively, achieving about 91.7% accuracy. The improvement from k=1 to k=5 demonstrates that considering more neighbors leads to more stable predictions, perhaps due to less sensitivity to noise.
