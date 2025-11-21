@@ -1,3 +1,5 @@
+NetID: df753
+
 Excercise 1
 
 This is not a clean URL as it shows the .py extension.
@@ -66,7 +68,10 @@ else:
     print(f"lm: a={a:.3f}, b={b:.3f}, error={e:.3f}")
 ```
 Global minimum: a=0.712, b=0.169, error=1.000
+
 Local minimum: a=0.216, b=0.689, error=1.100
+
+Without prior knowledge of how many minima exist, I may use a multi-start approach by running gradient descent from numerous randomly selected starting points distributed throughout the [0,1] × [0,1] parameter space. After running, I will group the results by their final (a,b) coordinates to identify distinct minima.
 
 Exercise 2
 ```python
@@ -334,3 +339,65 @@ Confusion Matrix (k=5):
  [ 43 582]]
 
 For k=1, the classifier achieved 445 correct Cammeo predictions and 571 correct Osmancik predictions, with 73 Cammeo samples misclassified as Osmancik and 54 Osmancik samples misclassified as Cammeo, yielding an accuracy of approximately 88.9%. For k=5, performance improved slightly with 467 correct Cammeo predictions and 582 correct Osmancik predictions, while misclassifications decreased to 51 and 43 respectively, achieving about 91.7% accuracy. The improvement from k=1 to k=5 demonstrates that considering more neighbors leads to more stable predictions, perhaps due to less sensitivity to noise.
+
+
+Exercise 4
+```python
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+```
+```python
+data = pd.read_csv('eeg-eye-state.csv')
+data = data.drop(columns=["eyeDetection"])
+```
+```python
+scaler = StandardScaler()
+data_standardized = scaler.fit_transform(data)
+```
+```python
+pca = PCA(n_components=14)
+data_pca = pca.fit_transform(data_standardized)
+
+plt.figure(figsize=(10, 6))
+plt.scatter(data_pca[:, 0], data_pca[:, 1])
+plt.xlabel('PC 1')
+plt.ylabel('PC 2')
+plt.title('PCA Plot before zoomed in')
+plt.show()
+```
+![PCA1](PCA1.png)
+```python
+plt.figure(figsize=(10, 6))
+plt.scatter(data_pca[:, 0], data_pca[:, 1])
+plt.xlabel('PC 1')
+plt.ylabel('PC 2')
+plt.title('PCA Plot after zoomed in')
+plt.xlim(-2, 4)
+plt.ylim(-1.5, 1.5)
+plt.show()
+```
+![PCA2](PCA2.png)
+```python
+kmeans = KMeans(n_clusters=7, init='random', random_state=42)
+clusters = kmeans.fit_predict(data_pca)
+
+centers_pca = kmeans.cluster_centers_
+
+plt.figure(figsize=(10, 6))
+for i in range(7):
+    mask = clusters == i
+    plt.scatter(data_pca[mask, 0], data_pca[mask, 1], label=f'Cluster {i}')
+plt.scatter(centers_pca[:, 0], centers_pca[:, 1], c='red', marker='x', label='Cluster Centers')
+plt.xlabel('PC 1')
+plt.ylabel('PC 2')
+plt.title('K-Means Clustering')
+plt.xlim(-2, 4)
+plt.ylim(-1.5, 1.5)
+plt.legend()
+plt.show()
+```
+![PCA3](PCA3.png)
