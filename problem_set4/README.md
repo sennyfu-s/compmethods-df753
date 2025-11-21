@@ -38,7 +38,35 @@ Learning rate (0.01): Small enough for stable convergence without overshooting.
 Step size h (1e-5): Balances accurate derivative approximation with numerical stability in floating-point arithmetic.
 
 Tolerance (1e-6): Stops when parameter changes are negligible.
+```python
+a2, b2 = 0.8, 0.8
 
+for i in range(1000):
+    e2 = float(requests.get(f"http://ramcdougal.com/cgi-bin/error_function.py?a={a2}&b={b2}", 
+                            headers={"User-Agent": "MyScript"}).text)
+    ea2 = float(requests.get(f"http://ramcdougal.com/cgi-bin/error_function.py?a={a2+h}&b={b2}", 
+                             headers={"User-Agent": "MyScript"}).text)
+    eb2 = float(requests.get(f"http://ramcdougal.com/cgi-bin/error_function.py?a={a2}&b={b2+h}", 
+                             headers={"User-Agent": "MyScript"}).text)
+    
+    a2_new = a2 - lr * (ea2 - e2) / h
+    b2_new = b2 - lr * (eb2 - e2) / h
+    
+    if abs(a2_new - a2) < 1e-6 and abs(b2_new - b2) < 1e-6:
+        break
+    
+    a2, b2 = a2_new, b2_new
+
+# Compare with previous max
+if e < e2:
+    print(f"gm: a={a:.3f}, b={b:.3f}, error={e:.3f}")
+    print(f"lm: a={a2:.3f}, b={b2:.3f}, error={e2:.3f}")
+else:
+    print(f"gm: a={a2:.3f}, b={b2:.3f}, error={e2:.3f}")
+    print(f"lm: a={a:.3f}, b={b:.3f}, error={e:.3f}")
+```
+Global minimum: a=0.216, b=0.689, error=1.100
+Local minimum: a=0.216, b=0.689, error=1.100
 
 Exercise 2
 ```python
@@ -134,3 +162,39 @@ seq2 = gcatcga,
 score = 7
 
 Test 1 produces a balanced alignment where matches are rewarded and gaps/mismatches are equally penalized. Test 2 makes gaps more expensive, resulting in alignments with fewer gaps but possibly more mismatches. The score is lower compared to test 1 because gaps cost more. Test 3 rewards matches more, increasing the overall score for the same alignment pattern. Test 4 makes mismatches more expensive, favoring alignments with more gaps over mismatches (score decreases).
+
+
+Exercise 3
+```python
+import pandas as pd
+import numpy as np
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+```
+```python
+data = pd.read_excel('Rice_Cammeo_Osmancik.xlsx')
+my_cols = data.columns[:-1]
+mean = data[my_cols].mean()
+std = data[my_cols].std()
+data[my_cols] = (data[my_cols] - mean) / std
+```
+```python
+pca = PCA(n_components=2)
+data_reduced = pca.fit_transform(data[my_cols])
+pc0 = data_reduced[:, 0]
+pc1 = data_reduced[:, 1]
+```
+```python
+plt.figure(figsize=(10, 6))
+for rice_type in data['Class'].unique():
+    mask = data['Class'] == rice_type
+    plt.scatter(pc0[mask], pc1[mask], label=rice_type, alpha=0.6)
+plt.xlabel('PC0')
+plt.ylabel('PC1')
+plt.legend()
+plt.title('Rice Types in 2D PCA Space')
+plt.show()
+```
+![PCA](PCA)
