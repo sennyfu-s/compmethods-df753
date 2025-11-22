@@ -539,8 +539,13 @@ if __name__ == "__main__":
     app.run()
 """)
 ```
+Open the web URL: http://127.0.0.1:5000
+
+When open the web:
 ![inter1](inter1.png)
+When enter the input:
 ![inter2](inter2.png)
+When recieve the output:
 ![inter3](inter3.png)
 I provide a static image on the first page of my web.
 I got error handling code line by telling 'No patients found in that age range. Try: [50-60), [70-80), [30-40)' if the age range is invalid.
