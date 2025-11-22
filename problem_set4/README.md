@@ -1,4 +1,8 @@
 NetID: df753
+```python
+# Before all please pip install the following:
+pip install scikit-learn flask pandas matplotlib numpy openpyxl requests
+```
 
 Excercise 1
 
