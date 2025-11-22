@@ -401,3 +401,148 @@ plt.legend()
 plt.show()
 ```
 ![PCA3](PCA3.png)
+Can only see 6 clusters because two of the cluster centers converged to nearly identical positions during the k-means algorithm.
+
+The brown region in the middle has high density, so multiple centers converged there to minimize within-cluster variance. The blue region on the left may be more spread out with lower density, so k-means didn't place a center directly there. (Explained based on the given figure not my figure)
+
+Making points smaller helps reduce overplotting and makes the structure clearer, but the underlying issue remains the same. The clusters still overlap and are still non-convex.
+
+By repeat the k-mean clustering several times, I see (1) different numbers of visible clusters, and (2) different positions of cluster centers.
+
+
+Exercise 5
+
+I have watched the video and asked the questions I had.
+
+Robert McDougal presents the lecture.
+
+Flask is the framework demonstrated.
+
+Classical servers serve static HTML files from folders. Flask differs by enabling dynamic content generation, e.g. it can process URL parameters, execute Python functions to calculate results and etc.
+
+Access Developer Tools through the browser menu can inspect page elements and view the console for JavaScript errors and log messages.
+
+The app.route decorator maps URLs to Python functions. For example, @app.route('/add/<int:a>/<int:b>') captures integers from the URL and passes them as arguments to the function, allowing one to build API endpoints that process input and return results.
+
+
+Exercise 6
+
+Usage of files:
+
+server.py: The main Flask application file that defines the web server routes and logic. It creates the Flask app and defines two routes: “/“, and "/analyze".
+
+index.html: HTML template displays a form where users can input text. It uses a POST method to submit data to the "/analyze" route.
+
+analyze.html: Displays the analysis results. Uses Jinja2 template variables ({{ usertext }} and {{ analysis }}) to show the original input and the character frequency analysis.
+
+The server.py uses render_template() to render the HTML templates. When users submit the form in index.html, Flask routes the POST request to the analyze() function, which processes the text using Counter, then renders analyze.html with the results.
+
+
+For my dataset:
+
+Question: What is the average length of hospital stay for patients in a specific age group?
+Input: The user will enter an age range (e.g. "50-60").
+Output: The system will return the average time in hospital (count by days) for patients in that age group.
+How to determine response: I will load the diabetes dataset CSV file, filter rows where the age column matches the input age range, extract the "time_in_hospital" column, calculate the mean value, and return the result showing the average number of days along with the count of patients in that age group.
+
+```python
+import urllib.request
+import zipfile
+
+urllib.request.urlretrieve("https://archive.ics.uci.edu/ml/machine-learning-databases/00296/dataset_diabetes.zip", "dataset_diabetes.zip")
+zipfile.ZipFile("dataset_diabetes.zip").extractall(".")
+```
+```python
+open("templates/index.html", "w").write("""<html>
+<body>
+<*STATIC IMAGE*, insert an image at the page>
+<img src="/static/icon.png" width="100">
+<br>
+Enter an age range to find average hospital stay:<br>
+<form action="/analyze" method="POST">
+<input type="text" name="agerange" placeholder="e.g., [50-60)">
+<br>
+<input type="submit" value="Analyze">
+</form>
+</body>
+</html>""")
+```
+```python
+open("templates/analyze.html", "w").write("""<html>
+<body>
+You entered: {{ agerange }}<br><br>
+{% if error %}
+<*ERROR HANDLING* give red color>
+<p style="color:red">{{ error }}</p>
+{% else %}
+<*MULTIPLE ANALYSES* not only average but also range and mode>
+<p>Number of patients: {{ n }}</p>
+<p>Average stay: {{ avg }} days</p>
+<p>Range: {{ min }} - {{ max }} days</p>
+<p>Mode: {{ mode }} days</p>
+<*DYNAMIC IMAGE* plot different image base on imput age>
+<img src="/static/chart.png" width="600">
+{% endif %}
+<br><br>
+<a href="/">Back</a>
+</body>
+</html>""")
+```
+``` python
+import os
+os.makedirs("templates", exist_ok=True)
+os.makedirs("static", exist_ok=True)
+# then I put in an image named 'icon.png" inside the folder 'static'
+```
+```python
+open("server.py", "w").write("""from flask import Flask, render_template, request
+import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route("/analyze", methods=["POST"])
+def analyze():
+    agerange = request.form["agerange"]
+    df = pd.read_csv("dataset_diabetes/diabetic_data.csv")
+    filtered = df[df["age"] == agerange]
+    
+    #ERROR HANDLING (tell no patient in the given range)
+    if len(filtered) == 0:
+        return render_template("analyze.html", agerange=agerange, error="No patients found in that age range. Try: [50-60), [70-80), [30-40)")
+    
+    #MULTIPLE ANALYSES (range and mode)
+    avg = filtered["time_in_hospital"].mean()
+    min_val = filtered["time_in_hospital"].min()
+    max_val = filtered["time_in_hospital"].max()
+    mode_val = filtered["time_in_hospital"].mode()[0]
+    
+    #GENERATE DYNAMIC IMAGE (based on given age range)
+    plt.figure(figsize=(8, 5))
+    filtered["time_in_hospital"].hist(bins=15, edgecolor='black')
+    plt.title(f'Hospital Stay Distribution for Age {agerange}')
+    plt.xlabel('Days in Hospital')
+    plt.ylabel('Number of Patients')
+    plt.savefig('static/chart.png')
+    plt.close()
+    
+    return render_template("analyze.html", agerange=agerange, n=len(filtered),
+                         avg=f"{avg:.2f}", min=min_val, max=max_val, mode=mode_val)
+
+if __name__ == "__main__":
+    app.run()
+""")
+```
+![inter1](inter1)
+![inter2](inter2)
+![inter3](inter3)
+I provide a static image on the first page of my web.
+I got error handling code line by telling 'No patients found in that age range. Try: [50-60), [70-80), [30-40)' if the age range is invalid.
+My web provide multiple analysis, not only the mean, but also give range and mode.
+My web provide dynamic plot based on the input age range.
