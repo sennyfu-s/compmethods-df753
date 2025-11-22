@@ -539,9 +539,9 @@ if __name__ == "__main__":
     app.run()
 """)
 ```
-![inter1](inter1)
-![inter2](inter2)
-![inter3](inter3)
+![inter1](inter1.png)
+![inter2](inter2.png)
+![inter3](inter3.png)
 I provide a static image on the first page of my web.
 I got error handling code line by telling 'No patients found in that age range. Try: [50-60), [70-80), [30-40)' if the age range is invalid.
 My web provide multiple analysis, not only the mean, but also give range and mode.
